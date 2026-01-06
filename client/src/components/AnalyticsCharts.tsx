@@ -6,8 +6,6 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  LineChart,
-  Line,
   AreaChart,
   Area,
   RadarChart,
@@ -18,6 +16,7 @@ import {
 } from "recharts";
 import { Card } from "@/components/ui/card";
 import { usePredictionHistory } from "@/hooks/use-predictions";
+import { BrainCircuit, TrendingUp, Sparkles } from "lucide-react";
 
 const featureImportanceData = [
   { name: "Skills", value: 35 },
@@ -38,18 +37,22 @@ const placementByCGPA = [
 export function AnalyticsCharts() {
   const { data: history } = usePredictionHistory();
 
-  // Simple aggregation for demo purposes if no history
-  const recentTrends = history?.slice(-10).map((h, i) => ({
-    id: i,
-    prob: h.probability * 100,
-    cgpa: h.cgpa
-  })) || [];
+  // Calculate profile metrics for Radar Chart
+  const lastPrediction = history?.[0];
+  const radarData = lastPrediction ? [
+    { subject: "CGPA", A: (lastPrediction.cgpa / 10) * 100, fullMark: 100 },
+    { subject: "Internships", A: Math.min((lastPrediction.internships / 3) * 100, 100), fullMark: 100 },
+    { subject: "Projects", A: Math.min((lastPrediction.projects / 5) * 100, 100), fullMark: 100 },
+    { subject: "Skills", A: lastPrediction.skillLevel * 10, fullMark: 100 },
+    { subject: "Comm.", A: lastPrediction.communicationScore * 10, fullMark: 100 },
+  ] : null;
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
       {/* Feature Importance */}
       <Card className="glass-card p-6 border-white/5">
-        <h3 className="text-xl font-display font-bold mb-6 text-white/90">
+        <h3 className="text-xl font-display font-bold mb-6 text-white/90 flex items-center gap-2">
+          <BrainCircuit className="text-primary w-5 h-5" />
           Model Feature Importance
         </h3>
         <div className="h-[300px] w-full">
@@ -69,7 +72,7 @@ export function AnalyticsCharts() {
                 tick={{ fontSize: 12 }} 
               />
               <Tooltip 
-                contentStyle={{ backgroundColor: '#111', borderColor: '#333' }}
+                contentStyle={{ backgroundColor: '#111', borderColor: '#333', borderRadius: '8px' }}
                 itemStyle={{ color: '#00f3ff' }}
                 cursor={{ fill: 'rgba(255,255,255,0.05)' }}
               />
@@ -86,7 +89,8 @@ export function AnalyticsCharts() {
 
       {/* Placement Probability by CGPA */}
       <Card className="glass-card p-6 border-white/5">
-        <h3 className="text-xl font-display font-bold mb-6 text-white/90">
+        <h3 className="text-xl font-display font-bold mb-6 text-white/90 flex items-center gap-2">
+          <TrendingUp className="text-secondary w-5 h-5" />
           Placement Rate by CGPA
         </h3>
         <div className="h-[300px] w-full">
@@ -102,7 +106,7 @@ export function AnalyticsCharts() {
               <XAxis dataKey="cgpa" stroke="#666" />
               <YAxis stroke="#666" />
               <Tooltip 
-                contentStyle={{ backgroundColor: '#111', borderColor: '#333' }}
+                contentStyle={{ backgroundColor: '#111', borderColor: '#333', borderRadius: '8px' }}
                 itemStyle={{ color: '#3b82f6' }}
               />
               <Area 
@@ -119,14 +123,34 @@ export function AnalyticsCharts() {
       
       {/* Radar Chart for Ideal Profile vs Average */}
       <Card className="glass-card p-6 border-white/5 lg:col-span-2">
-         <h3 className="text-xl font-display font-bold mb-6 text-white/90">
-          Your Profile Analysis
+         <h3 className="text-xl font-display font-bold mb-6 text-white/90 flex items-center gap-2">
+          <Sparkles className="text-primary w-5 h-5" />
+          Latest Profile Analysis
         </h3>
         <div className="h-[400px] w-full flex justify-center items-center">
-            {/* Using a placeholder visual if no data is present, otherwise show recent */}
-           <div className="text-center text-muted-foreground">
-             <p>Make a prediction to see your profile radar chart analysis.</p>
-           </div>
+          {radarData ? (
+            <ResponsiveContainer width="100%" height="100%">
+              <RadarChart cx="50%" cy="50%" outerRadius="80%" data={radarData}>
+                <PolarGrid stroke="#333" />
+                <PolarAngleAxis dataKey="subject" tick={{ fill: '#999', fontSize: 12 }} />
+                <PolarRadiusAxis angle={30} domain={[0, 100]} tick={false} stroke="#333" />
+                <Radar
+                  name="Your Profile"
+                  dataKey="A"
+                  stroke="#00f3ff"
+                  fill="#00f3ff"
+                  fillOpacity={0.6}
+                />
+                <Tooltip 
+                  contentStyle={{ backgroundColor: '#111', borderColor: '#333', borderRadius: '8px' }}
+                />
+              </RadarChart>
+            </ResponsiveContainer>
+          ) : (
+             <div className="text-center text-muted-foreground">
+               <p>Make a prediction to see your profile radar chart analysis.</p>
+             </div>
+          )}
         </div>
       </Card>
     </div>

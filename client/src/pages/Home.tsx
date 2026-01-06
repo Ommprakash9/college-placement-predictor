@@ -292,25 +292,52 @@ export default function Home() {
                       </p>
 
                       <div className="bg-white/5 rounded-xl p-6 w-full text-left border border-white/5">
-                        <h4 className="font-bold mb-4 flex items-center gap-2">
-                          <Sparkles size={16} className="text-secondary" />
-                          AI Recommendations
-                        </h4>
-                        <ul className="space-y-3 text-sm text-gray-300">
-                          {predictionData.placed ? (
-                            <>
-                              <li className="flex gap-2"><span className="text-green-500">✓</span> Strong technical profile detected.</li>
-                              <li className="flex gap-2"><span className="text-green-500">✓</span> Keep maintaining your CGPA above 8.0.</li>
-                              <li className="flex gap-2"><span className="text-blue-400">→</span> Focus on advanced system design interviews.</li>
-                            </>
-                          ) : (
-                            <>
-                              <li className="flex gap-2"><span className="text-orange-500">!</span> Increase project count to at least 3.</li>
-                              <li className="flex gap-2"><span className="text-orange-500">!</span> Improve communication skills through mock interviews.</li>
-                              <li className="flex gap-2"><span className="text-blue-400">→</span> Consider applying for more internships.</li>
-                            </>
+                        <div className="flex justify-between items-center mb-4">
+                          <h4 className="font-bold flex items-center gap-2">
+                            <Sparkles size={16} className="text-secondary" />
+                            AI Insights
+                          </h4>
+                          <span className={cn(
+                            "text-xs px-2 py-1 rounded-full border",
+                            predictionData.confidence === "High" ? "bg-green-500/10 border-green-500/20 text-green-500" :
+                            predictionData.confidence === "Medium" ? "bg-yellow-500/10 border-yellow-500/20 text-yellow-500" :
+                            "bg-red-500/10 border-red-500/20 text-red-500"
+                          )}>
+                            {predictionData.confidence} Confidence
+                          </span>
+                        </div>
+                        <ul className="space-y-3 text-sm text-gray-300 mb-6">
+                          {predictionData.recommendations.map((rec, i) => (
+                            <li key={i} className="flex gap-2">
+                              <span className="text-blue-400">→</span> {rec}
+                            </li>
+                          ))}
+                          {predictionData.recommendations.length === 0 && (
+                            <li className="flex gap-2"><span className="text-green-500">✓</span> Your profile meets all target benchmarks!</li>
                           )}
                         </ul>
+
+                        <h4 className="font-bold mb-4 flex items-center gap-2 border-t border-white/5 pt-4">
+                          <TrendingUp size={16} className="text-primary" />
+                          Career Roadmap
+                        </h4>
+                        <div className="space-y-4">
+                          {predictionData.roadmap.map((step, i) => (
+                            <div key={i} className="flex items-center gap-3">
+                              <div className={cn(
+                                "w-2 h-2 rounded-full",
+                                step.status === "complete" ? "bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]" : "bg-white/20"
+                              )} />
+                              <span className={cn(
+                                "text-xs",
+                                step.status === "complete" ? "text-white font-medium" : "text-gray-500"
+                              )}>
+                                {step.task}
+                              </span>
+                              {step.status === "complete" && <CheckCircle2 size={12} className="text-green-500 ml-auto" />}
+                            </div>
+                          ))}
+                        </div>
                       </div>
 
                       <Button variant="ghost" className="mt-6 text-muted-foreground hover:text-white" onClick={() => reset()}>

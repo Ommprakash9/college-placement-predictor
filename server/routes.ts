@@ -82,6 +82,47 @@ export async function registerRoutes(
         placed = probability > 0.6;
       }
 
+      // Logic for Confidence, Recommendations, and Roadmap
+      const confidence = probability > 0.8 ? "High" : probability > 0.4 ? "Medium" : "Low";
+      
+      const recommendations: string[] = [];
+      const roadmap: {title: string, status: "complete" | "pending"}[] = [];
+
+      if (input.cgpa < 8) {
+        recommendations.push("Focus on increasing your CGPA above 8.0 for better opportunities.");
+        roadmap.push({ title: "Academic Excellence (CGPA 8+)", status: "pending" });
+      } else {
+        roadmap.push({ title: "Academic Excellence (CGPA 8+)", status: "complete" });
+      }
+
+      if (input.internships < 1) {
+        recommendations.push("Seek at least one internship to gain practical industry exposure.");
+        roadmap.push({ title: "Industry Internship", status: "pending" });
+      } else {
+        roadmap.push({ title: "Industry Internship", status: "complete" });
+      }
+
+      if (input.projects < 3) {
+        recommendations.push("Build more diverse projects to showcase your technical implementation skills.");
+        roadmap.push({ title: "Project Portfolio (3+ Projects)", status: "pending" });
+      } else {
+        roadmap.push({ title: "Project Portfolio (3+ Projects)", status: "complete" });
+      }
+
+      if (input.skillLevel < 7) {
+        recommendations.push("Upskill in core technologies like Data Structures, Algorithms, or specialized domains.");
+        roadmap.push({ title: "Advanced Technical Upskilling", status: "pending" });
+      } else {
+        roadmap.push({ title: "Advanced Technical Upskilling", status: "complete" });
+      }
+
+      if (input.communicationScore < 7) {
+        recommendations.push("Work on soft skills and mock interviews to improve communication.");
+        roadmap.push({ title: "Soft Skills & Mock Interviews", status: "pending" });
+      } else {
+        roadmap.push({ title: "Soft Skills & Mock Interviews", status: "complete" });
+      }
+
       // Store in DB
       await storage.createPrediction({
         cgpa: input.cgpa,
@@ -90,12 +131,18 @@ export async function registerRoutes(
         skillLevel: input.skillLevel,
         communicationScore: input.communicationScore,
         prediction: placed,
-        probability: probability
+        probability: probability,
+        confidence,
+        recommendations,
+        roadmap: roadmap.map(r => ({ title: r.title, status: r.status }))
       });
 
       res.json({
         placed,
         probability,
+        confidence,
+        recommendations,
+        roadmap: roadmap.map(r => ({ task: r.title, status: r.status })),
         input
       });
 
@@ -133,7 +180,10 @@ export async function registerRoutes(
           skillLevel: parseInt(cols[3]),
           communicationScore: parseInt(cols[4]),
           prediction: parseInt(cols[5]) === 1,
-          probability: parseInt(cols[5]) === 1 ? 0.9 : 0.1 // Mock probability for seed data
+          probability: parseInt(cols[5]) === 1 ? 0.9 : 0.1,
+          confidence: parseInt(cols[5]) === 1 ? "High" : "Low",
+          recommendations: [],
+          roadmap: []
         });
       }
     }

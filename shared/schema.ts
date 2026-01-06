@@ -10,10 +10,11 @@ export const predictions = pgTable("predictions", {
   projects: integer("projects").notNull(),
   skillLevel: integer("skill_level").notNull(),
   communicationScore: integer("communication_score").notNull(),
-  prediction: boolean("prediction").notNull(), 
+  prediction: boolean("prediction").notNull(),
   probability: real("probability").notNull(),
-  confidence: text("confidence").notNull().default('Medium'), // Low, Medium, High
-  recommendations: jsonb("recommendations").notNull().default([]), // List of personalized tips
+  confidence: text("confidence").notNull(), // "Low", "Medium", "High"
+  recommendations: jsonb("recommendations").$type<string[]>().notNull(),
+  roadmap: jsonb("roadmap").$type<{title: string, status: "complete" | "pending"}[]>().notNull(),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -23,7 +24,6 @@ export const insertPredictionSchema = createInsertSchema(predictions).omit({
 });
 
 // === API CONTRACT TYPES ===
-
 export const predictionInputSchema = z.object({
   cgpa: z.number().min(0).max(10),
   internships: z.number().min(0),
@@ -39,6 +39,7 @@ export type PredictionResponse = {
   probability: number;
   confidence: string;
   recommendations: string[];
+  roadmap: {title: string, status: "complete" | "pending"}[];
   input: PredictionInput;
 };
 

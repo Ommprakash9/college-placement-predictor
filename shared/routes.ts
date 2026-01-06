@@ -1,6 +1,16 @@
 import { z } from 'zod';
 import { predictionInputSchema, predictions } from './schema';
 
+export const errorSchemas = {
+  validation: z.object({
+    message: z.string(),
+    field: z.string().optional(),
+  }),
+  notFound: z.object({
+    message: z.string(),
+  }),
+};
+
 export const api = {
   predict: {
     submit: {
@@ -13,8 +23,10 @@ export const api = {
           probability: z.number(),
           confidence: z.enum(["Low", "Medium", "High"]),
           recommendations: z.array(z.string()),
+          roadmap: z.array(z.object({ task: z.string(), status: z.string() })),
           input: predictionInputSchema
         }),
+        400: errorSchemas.validation,
         500: z.object({ message: z.string() })
       },
     },

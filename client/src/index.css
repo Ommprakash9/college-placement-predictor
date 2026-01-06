@@ -85,6 +85,51 @@
   text-shadow: 0 0 10px rgba(0, 243, 255, 0.5);
 }
 
-.neon-border {
-  box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
+@keyframes float {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-20px) scale(1.05); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.3; box-shadow: 0 0 20px rgba(0, 243, 255, 0.2); }
+  50% { opacity: 0.6; box-shadow: 0 0 40px rgba(0, 243, 255, 0.4); }
+}
+
+@keyframes typing {
+  from { width: 0 }
+  to { width: 100% }
+}
+
+@keyframes blink {
+  50% { border-color: transparent }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 4s ease-in-out infinite;
+}
+
+.typing-text {
+  overflow: hidden;
+  white-space: nowrap;
+  border-right: 2px solid hsl(var(--primary));
+  animation: typing 3s steps(40, end), blink 0.75s step-end infinite;
+}
+
+.reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.reveal-on-scroll.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.section-divider {
+  @apply h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent my-12;
 }

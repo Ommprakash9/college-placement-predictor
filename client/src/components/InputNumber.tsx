@@ -30,14 +30,14 @@ export function InputNumber({
   };
 
   return (
-    <div className={cn("space-y-4", className)}>
-      <Label className="text-base font-medium text-gray-200">{label}</Label>
+    <div className={cn("space-y-4 group", className)}>
+      <Label className="text-base font-medium text-gray-200 group-hover:text-secondary transition-colors">{label}</Label>
       <div className="flex items-center gap-3">
         <button
           type="button"
           onClick={handleDecrement}
           disabled={value <= min}
-          className="h-10 w-10 flex items-center justify-center rounded-lg bg-secondary/10 border border-secondary/20 text-secondary hover:bg-secondary/20 hover:border-secondary transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="h-10 w-10 flex items-center justify-center rounded-lg bg-secondary/10 border border-secondary/20 text-secondary hover:bg-secondary/20 hover:border-secondary transition-all active:scale-90 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <Minus size={18} />
         </button>
@@ -50,7 +50,7 @@ export function InputNumber({
               const val = parseInt(e.target.value);
               if (!isNaN(val) && val >= min && val <= max) onChange(val);
             }}
-            className="text-center font-mono font-bold bg-background/50 border-input focus:border-primary focus:ring-primary/20"
+            className="text-center font-mono font-bold bg-background/50 border-input focus:border-secondary focus:ring-secondary/20 transition-all hover:border-secondary/50"
           />
         </div>
 
@@ -58,7 +58,7 @@ export function InputNumber({
           type="button"
           onClick={handleIncrement}
           disabled={value >= max}
-          className="h-10 w-10 flex items-center justify-center rounded-lg bg-secondary/10 border border-secondary/20 text-secondary hover:bg-secondary/20 hover:border-secondary transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="h-10 w-10 flex items-center justify-center rounded-lg bg-secondary/10 border border-secondary/20 text-secondary hover:bg-secondary/20 hover:border-secondary transition-all active:scale-90 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <Plus size={18} />
         </button>

@@ -1,9 +1,8 @@
-import { pgTable, text, serial, integer, real, boolean, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, real, boolean, timestamp, jsonb } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
 // === STORAGE SCHEMAS ===
-// We'll store prediction history to show analytics over time
 export const predictions = pgTable("predictions", {
   id: serial("id").primaryKey(),
   cgpa: real("cgpa").notNull(),
@@ -11,8 +10,10 @@ export const predictions = pgTable("predictions", {
   projects: integer("projects").notNull(),
   skillLevel: integer("skill_level").notNull(),
   communicationScore: integer("communication_score").notNull(),
-  prediction: boolean("prediction").notNull(), // true = Placed, false = Not Placed
+  prediction: boolean("prediction").notNull(), 
   probability: real("probability").notNull(),
+  confidence: text("confidence").notNull().default('Medium'), // Low, Medium, High
+  recommendations: jsonb("recommendations").notNull().default([]), // List of personalized tips
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -23,7 +24,6 @@ export const insertPredictionSchema = createInsertSchema(predictions).omit({
 
 // === API CONTRACT TYPES ===
 
-// Input for the prediction algorithm
 export const predictionInputSchema = z.object({
   cgpa: z.number().min(0).max(10),
   internships: z.number().min(0),
@@ -37,6 +37,8 @@ export type PredictionInput = z.infer<typeof predictionInputSchema>;
 export type PredictionResponse = {
   placed: boolean;
   probability: number;
+  confidence: string;
+  recommendations: string[];
   input: PredictionInput;
 };
 

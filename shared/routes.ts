@@ -11,6 +11,8 @@ export const api = {
         200: z.object({
           placed: z.boolean(),
           probability: z.number(),
+          confidence: z.enum(["Low", "Medium", "High"]),
+          recommendations: z.array(z.string()),
           input: predictionInputSchema
         }),
         500: z.object({ message: z.string() })
@@ -27,3 +29,15 @@ export const api = {
     },
   }
 };
+
+export function buildUrl(path: string, params?: Record<string, string | number>): string {
+  let url = path;
+  if (params) {
+    Object.entries(params).forEach(([key, value]) => {
+      if (url.includes(`:${key}`)) {
+        url = url.replace(`:${key}`, String(value));
+      }
+    });
+  }
+  return url;
+}

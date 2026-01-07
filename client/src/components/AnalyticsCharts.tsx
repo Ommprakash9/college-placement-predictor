@@ -91,6 +91,8 @@ export function AnalyticsCharts() {
                 fill="#00f3ff" 
                 radius={[0, 4, 4, 0]} 
                 barSize={20}
+                animationDuration={1500}
+                animationBegin={300}
               />
             </BarChart>
           </ResponsiveContainer>
@@ -125,6 +127,7 @@ export function AnalyticsCharts() {
                 stroke="#3b82f6" 
                 fillOpacity={1} 
                 fill="url(#colorRate)" 
+                animationDuration={2000}
               />
             </AreaChart>
           </ResponsiveContainer>

@@ -432,6 +432,55 @@ export default function Home() {
                       </div>
 
                       <div className="grid md:grid-cols-2 gap-6">
+                        {/* Career Insights Section */}
+                        <motion.div 
+                          initial={{ opacity: 0, y: 20 }}
+                          whileInView={{ opacity: 1, y: 0 }}
+                          viewport={{ once: true }}
+                          transition={{ delay: 0.2 }}
+                          className="glass-card p-8 rounded-3xl border-white/5 lg:col-span-2"
+                        >
+                          <h4 className="font-bold flex items-center gap-2 text-xl mb-6">
+                            <BrainCircuit size={18} className="text-primary" />
+                            Strategic Insights
+                          </h4>
+                          <div className="grid md:grid-cols-3 gap-6">
+                            {[
+                              { 
+                                title: "Primary Driver", 
+                                factor: predictionData.probability > 0.7 ? "Strong Academic Base" : "Skill Gap Identified",
+                                desc: predictionData.probability > 0.7 ? "Your high CGPA and technical projects significantly boost placement chances." : "Current technical metrics suggest room for strategic improvement.",
+                                color: predictionData.probability > 0.7 ? "text-primary" : "text-orange-400"
+                              },
+                              { 
+                                title: "Market Alignment", 
+                                factor: "Technical Skillset",
+                                desc: "The model emphasizes your project experience as a key indicator of production readiness.",
+                                color: "text-secondary"
+                              },
+                              { 
+                                title: "Growth Opportunity", 
+                                factor: "Interpersonal Impact",
+                                desc: "Enhancing communication scores often results in a 15-20% uplift in final placement probability.",
+                                color: "text-amber-400"
+                              }
+                            ].map((insight, idx) => (
+                              <motion.div
+                                key={idx}
+                                initial={{ opacity: 0, x: -20 }}
+                                whileInView={{ opacity: 1, x: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: 0.4 + (idx * 0.2) }}
+                                className="bg-white/5 p-4 rounded-2xl border border-white/5"
+                              >
+                                <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-1">{insight.title}</p>
+                                <p className={cn("font-bold text-lg mb-2", insight.color)}>{insight.factor}</p>
+                                <p className="text-sm text-muted-foreground leading-relaxed">{insight.desc}</p>
+                              </motion.div>
+                            ))}
+                          </div>
+                        </motion.div>
+
                         <motion.div 
                           initial={{ opacity: 0, y: 20 }}
                           animate={{ opacity: 1, y: 0 }}

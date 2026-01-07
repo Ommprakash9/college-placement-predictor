@@ -3,27 +3,27 @@ import type { Server } from "http";
 import { storage } from "./storage";
 import { api } from "@shared/routes";
 import { z } from "zod";
-import fs from 'fs';
-import path from 'path';
+import fs from "fs";
+import path from "path";
 
 // Model weights type
 interface ModelWeights {
   intercept: number[];
-  coefficients: number[][]; // Scikit-learn structure: [[c1, c2, ...]]
+  coefficients: number[][];
   classes: number[];
 }
 
 // Load model weights at startup
 let modelWeights: ModelWeights | null = null;
-const MODEL_PATH = path.join(process.cwd(), 'model', 'model.json');
+const MODEL_PATH = path.join(process.cwd(), "model", "model.json");
 
 try {
   if (fs.existsSync(MODEL_PATH)) {
-    const data = fs.readFileSync(MODEL_PATH, 'utf-8');
+    const data = fs.readFileSync(MODEL_PATH, "utf-8");
     modelWeights = JSON.parse(data);
     console.log("ML Model loaded successfully.");
   } else {
-    console.warn("Model file not found. Predictions will use fallback logic until trained.");
+    console.warn("Model file not found. Using fallback logic.");
   }
 } catch (error) {
   console.error("Error loading model:", error);
@@ -34,17 +34,17 @@ export async function registerRoutes(
   app: Express
 ): Promise<Server> {
 
-  // Prediction Endpoint
+  // ============================
+  // PREDICTION ENDPOINT (WORKING)
+  // ============================
   app.post(api.predict.submit.path, async (req, res) => {
     try {
       const input = api.predict.submit.input.parse(req.body);
-      
+
       let probability = 0.5;
       let placed = false;
 
       if (modelWeights) {
-        // Logistic Regression Inference: z = intercept + (coef * features)
-        // Feature order MUST match training: [cgpa, internships, projects, skillLevel, communicationScore]
         const features = [
           input.cgpa,
           input.internships,
@@ -53,7 +53,6 @@ export async function registerRoutes(
           input.communicationScore
         ];
 
-        // coefficients is usually shape (1, n_features) for binary classification
         const coefs = modelWeights.coefficients[0];
         const intercept = modelWeights.intercept[0];
 
@@ -62,68 +61,64 @@ export async function registerRoutes(
           logit += features[i] * coefs[i];
         }
 
-        // Sigmoid function
         probability = 1 / (1 + Math.exp(-logit));
         placed = probability > 0.5;
-
       } else {
-        // Fallback Heuristic if model missing (e.g., first run)
-        // High CGPA (>8) + Skills (>7) usually means placed
-        const score = 
-          (input.cgpa * 1.5) + 
-          (input.skillLevel * 1.0) + 
-          (input.communicationScore * 0.8) +
-          (input.internships * 2.0) +
-          (input.projects * 1.5);
-          
-        // Normalize roughly to 0-1 range based on max possible score
-        // Max ~ (10*1.5 + 10*1 + 10*0.8 + 5*2 + 5*1.5) = 15+10+8+10+7.5 = 50.5
+        const score =
+          input.cgpa * 1.5 +
+          input.skillLevel * 1.0 +
+          input.communicationScore * 0.8 +
+          input.internships * 2.0 +
+          input.projects * 1.5;
+
         probability = Math.min(Math.max(score / 45, 0), 1);
         placed = probability > 0.6;
       }
 
-      // Logic for Confidence, Recommendations, and Roadmap
-      const confidence = probability > 0.8 ? "High" : probability > 0.4 ? "Medium" : "Low";
-      
+      const confidence =
+        probability > 0.8 ? "High" :
+        probability > 0.4 ? "Medium" :
+        "Low";
+
       const recommendations: string[] = [];
-      const roadmap: {title: string, status: "complete" | "pending"}[] = [];
+      const roadmap: { title: string; status: "complete" | "pending" }[] = [];
 
       if (input.cgpa < 8) {
-        recommendations.push("Focus on increasing your CGPA above 8.0 for better opportunities.");
+        recommendations.push("Improve CGPA to 8+.");
         roadmap.push({ title: "Academic Excellence (CGPA 8+)", status: "pending" });
       } else {
         roadmap.push({ title: "Academic Excellence (CGPA 8+)", status: "complete" });
       }
 
       if (input.internships < 1) {
-        recommendations.push("Seek at least one internship to gain practical industry exposure.");
+        recommendations.push("Get at least one internship.");
         roadmap.push({ title: "Industry Internship", status: "pending" });
       } else {
         roadmap.push({ title: "Industry Internship", status: "complete" });
       }
 
       if (input.projects < 3) {
-        recommendations.push("Build more diverse projects to showcase your technical implementation skills.");
+        recommendations.push("Build more projects.");
         roadmap.push({ title: "Project Portfolio (3+ Projects)", status: "pending" });
       } else {
         roadmap.push({ title: "Project Portfolio (3+ Projects)", status: "complete" });
       }
 
       if (input.skillLevel < 7) {
-        recommendations.push("Upskill in core technologies like Data Structures, Algorithms, or specialized domains.");
+        recommendations.push("Upskill technical strengths.");
         roadmap.push({ title: "Advanced Technical Upskilling", status: "pending" });
       } else {
         roadmap.push({ title: "Advanced Technical Upskilling", status: "complete" });
       }
 
       if (input.communicationScore < 7) {
-        recommendations.push("Work on soft skills and mock interviews to improve communication.");
+        recommendations.push("Improve communication skills.");
         roadmap.push({ title: "Soft Skills & Mock Interviews", status: "pending" });
       } else {
         roadmap.push({ title: "Soft Skills & Mock Interviews", status: "complete" });
       }
 
-      // Store in DB
+      // SAVE PREDICTION (DB WRITE IS OK)
       await storage.createPrediction({
         cgpa: input.cgpa,
         internships: input.internships,
@@ -131,10 +126,10 @@ export async function registerRoutes(
         skillLevel: input.skillLevel,
         communicationScore: input.communicationScore,
         prediction: placed,
-        probability: probability,
+        probability,
         confidence,
         recommendations,
-        roadmap: roadmap.map(r => ({ title: r.title, status: r.status }))
+        roadmap
       });
 
       res.json({
@@ -142,7 +137,7 @@ export async function registerRoutes(
         probability,
         confidence,
         recommendations,
-        roadmap: roadmap.map(r => ({ task: r.title, status: r.status })),
+        roadmap,
         input
       });
 
@@ -155,40 +150,21 @@ export async function registerRoutes(
     }
   });
 
-  // History Endpoint
-  app.get(api.history.list.path, async (req, res) => {
-    const history = await storage.getHistory();
-    res.json(history);
-  });
+  // ==========================================
+  // HISTORY ENDPOINT (TEMPORARILY DISABLED)
+  // ==========================================
+  // app.get(api.history.list.path, async (req, res) => {
+  //   const history = await storage.getHistory();
+  //   res.json(history);
+  // });
 
-  // Seed data if empty
-  const history = await storage.getHistory();
-  if (history.length === 0 && fs.existsSync('dataset/placement.csv')) {
-    console.log("Seeding database with initial data...");
-    const csvContent = fs.readFileSync('dataset/placement.csv', 'utf-8');
-    const rows = csvContent.split('\n').slice(1).filter(r => r.trim()); // Skip header
-    
-    // Insert last 20 rows as "recent predictions"
-    const seedRows = rows.slice(-20);
-    for (const row of seedRows) {
-      const cols = row.split(',');
-      if (cols.length >= 6) {
-        await storage.createPrediction({
-          cgpa: parseFloat(cols[0]),
-          internships: parseInt(cols[1]),
-          projects: parseInt(cols[2]),
-          skillLevel: parseInt(cols[3]),
-          communicationScore: parseInt(cols[4]),
-          prediction: parseInt(cols[5]) === 1,
-          probability: parseInt(cols[5]) === 1 ? 0.9 : 0.1,
-          confidence: parseInt(cols[5]) === 1 ? "High" : "Low",
-          recommendations: [],
-          roadmap: []
-        });
-      }
-    }
-    console.log("Seeding complete.");
-  }
+  // ==========================================
+  // SEEDING LOGIC (TEMPORARILY DISABLED)
+  // ==========================================
+  // const history = await storage.getHistory();
+  // if (history.length === 0 && fs.existsSync("dataset/placement.csv")) {
+  //   console.log("Seeding database...");
+  // }
 
   return httpServer;
 }

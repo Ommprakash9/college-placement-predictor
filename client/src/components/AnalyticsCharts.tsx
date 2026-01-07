@@ -36,6 +36,7 @@ const placementByCGPA = [
 
 export function AnalyticsCharts() {
   const { data: history } = usePredictionHistory();
+  const lastPrediction = history?.[0];
 
   // Benchmark data for placed students
   const benchmarkData = [

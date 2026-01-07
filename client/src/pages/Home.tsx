@@ -222,14 +222,14 @@ export default function Home() {
             
             <div className="grid grid-cols-2 gap-6 relative">
                <div className="absolute inset-0 bg-primary/5 blur-[100px] -z-10" />
-              <Card className="glass-card p-8 flex flex-col items-center text-center border-white/10 hover:border-primary/40 transition-all duration-500 hover:-translate-y-2">
+              <Card className="glass-card p-8 flex flex-col items-center text-center border-white/10 hover:border-primary/40 transition-all duration-500 hover:-translate-y-2 hover-elevate">
                 <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-6">
                   <BrainCircuit className="w-8 h-8 text-primary" />
                 </div>
                 <h3 className="text-xl font-bold mb-3">Neural Model</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">Multi-layer logistic inference engine optimized for precision.</p>
               </Card>
-              <Card className="glass-card p-8 flex flex-col items-center text-center border-white/10 hover:border-secondary/40 transition-all duration-500 hover:-translate-y-2 lg:mt-12">
+              <Card className="glass-card p-8 flex flex-col items-center text-center border-white/10 hover:border-secondary/40 transition-all duration-500 hover:-translate-y-2 lg:mt-12 hover-elevate">
                 <div className="w-14 h-14 rounded-2xl bg-secondary/10 flex items-center justify-center mb-6">
                   <TrendingUp className="w-8 h-8 text-secondary" />
                 </div>
@@ -311,7 +311,7 @@ export default function Home() {
                       "w-full h-16 text-xl font-bold rounded-2xl mt-6 transition-all duration-500 overflow-hidden relative group",
                       isPending 
                         ? "bg-muted text-muted-foreground cursor-wait" 
-                        : "bg-primary text-background shadow-[0_0_30px_rgba(0,243,255,0.3)] hover:shadow-[0_0_50px_rgba(0,243,255,0.5)] active:scale-[0.98] hover:scale-[1.02]"
+                        : "bg-primary text-background shadow-[0_0_30px_rgba(0,243,255,0.3)] hover:shadow-[0_0_50px_rgba(0,243,255,0.5)] active:scale-[0.98] hover:scale-[1.02] hover-elevate"
                     )}
                   >
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:animate-[shimmer_2s_infinite]" />
@@ -387,7 +387,14 @@ export default function Home() {
                             />
                           </svg>
                           <div className="absolute inset-0 flex flex-col items-center justify-center">
-                             <span className="text-4xl font-display font-black">{(predictionData.probability * 100).toFixed(0)}%</span>
+                             <motion.span 
+                               initial={{ opacity: 0 }}
+                               animate={{ opacity: 1 }}
+                               transition={{ delay: 1 }}
+                               className="text-4xl font-display font-black"
+                             >
+                               {(predictionData.probability * 100).toFixed(0)}%
+                             </motion.span>
                              <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">Confidence</span>
                           </div>
                         </div>

@@ -139,10 +139,6 @@
   border-color: hsl(var(--primary));
 }
 
-.test-red-border {
-  border: 10px solid red !important;
-}
-
 @keyframes shimmer {
   100% { transform: translateX(100%); }
 }

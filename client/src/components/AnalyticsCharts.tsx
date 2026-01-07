@@ -36,7 +36,6 @@ const placementByCGPA = [
 
 export function AnalyticsCharts() {
   const { data: history } = usePredictionHistory();
-  const lastPrediction = history?.[0];
 
   // Benchmark data for placed students
   const benchmarkData = [
@@ -46,6 +45,8 @@ export function AnalyticsCharts() {
     { subject: "Skills", B: 80, fullMark: 100 },
     { subject: "Comm.", B: 75, fullMark: 100 },
   ];
+
+  const lastPrediction = history?.[0];
 
   // Merge last prediction with benchmark
   const radarData = lastPrediction ? [

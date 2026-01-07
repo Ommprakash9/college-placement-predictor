@@ -150,6 +150,27 @@ export default function Home() {
                 Analyze My Profile
               </Button>
             </div>
+
+            {/* Success Ticker */}
+            <div className="mt-16 flex items-center justify-center gap-8 overflow-hidden py-4 border-y border-white/5 max-w-4xl mx-auto opacity-50">
+               {[
+                 { user: "User #829", status: "PLACED", prob: "94%" },
+                 { user: "User #741", status: "PLACED", prob: "88%" },
+                 { user: "User #902", status: "AT RISK", prob: "32%" },
+                 { user: "User #615", status: "PLACED", prob: "91%" },
+               ].map((item, i) => (
+                 <motion.div 
+                   key={i}
+                   animate={{ x: [0, -1000] }}
+                   transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                   className="flex items-center gap-2 whitespace-nowrap shrink-0"
+                 >
+                   <span className="text-[10px] font-mono text-muted-foreground">{item.user}</span>
+                   <span className={cn("text-[10px] font-bold", item.status === "PLACED" ? "text-primary" : "text-orange-500")}>{item.status}</span>
+                   <span className="text-[10px] text-white/20">CONF: {item.prob}</span>
+                 </motion.div>
+               ))}
+            </div>
           </motion.div>
         </div>
 
@@ -290,9 +311,10 @@ export default function Home() {
                       "w-full h-16 text-xl font-bold rounded-2xl mt-6 transition-all duration-500 overflow-hidden relative group",
                       isPending 
                         ? "bg-muted text-muted-foreground cursor-wait" 
-                        : "bg-primary text-background shadow-[0_0_30px_rgba(0,243,255,0.3)] hover:shadow-[0_0_50px_rgba(0,243,255,0.5)] active:scale-[0.98]"
+                        : "bg-primary text-background shadow-[0_0_30px_rgba(0,243,255,0.3)] hover:shadow-[0_0_50px_rgba(0,243,255,0.5)] active:scale-[0.98] hover:scale-[1.02]"
                     )}
                   >
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:animate-[shimmer_2s_infinite]" />
                     <AnimatePresence mode="wait">
                       {isPending ? (
                         <motion.span 
@@ -468,13 +490,23 @@ export default function Home() {
                         </motion.div>
                       </div>
 
-                      <Button 
-                        variant="ghost" 
-                        className="mt-12 w-full text-muted-foreground hover:text-white border border-white/5 rounded-2xl h-14 font-bold" 
-                        onClick={() => reset()}
-                      >
-                        Recalibrate Matrix
-                      </Button>
+                      <div className="flex flex-col sm:flex-row gap-4 mt-12">
+                        <Button 
+                          variant="ghost" 
+                          className="flex-1 text-muted-foreground hover:text-white border border-white/5 rounded-2xl h-14 font-bold" 
+                          onClick={() => reset()}
+                        >
+                          Recalibrate Matrix
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          className="flex-1 border-primary/20 text-primary hover:bg-primary/10 rounded-2xl h-14 font-bold gap-2"
+                          onClick={() => window.print()}
+                        >
+                          <TrendingUp size={18} />
+                          Generate Report
+                        </Button>
+                      </div>
                     </Card>
                   </motion.div>
                 ) : (

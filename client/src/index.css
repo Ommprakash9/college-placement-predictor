@@ -130,6 +130,10 @@
   transform: translateY(0);
 }
 
+@keyframes shimmer {
+  100% { transform: translateX(100%); }
+}
+
 .section-divider {
   @apply h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent my-12;
 }

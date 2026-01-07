@@ -37,14 +37,22 @@ const placementByCGPA = [
 export function AnalyticsCharts() {
   const { data: history } = usePredictionHistory();
 
-  // Calculate profile metrics for Radar Chart
-  const lastPrediction = history?.[0];
+  // Benchmark data for placed students
+  const benchmarkData = [
+    { subject: "CGPA", B: 85, fullMark: 100 },
+    { subject: "Internships", B: 70, fullMark: 100 },
+    { subject: "Projects", B: 65, fullMark: 100 },
+    { subject: "Skills", B: 80, fullMark: 100 },
+    { subject: "Comm.", B: 75, fullMark: 100 },
+  ];
+
+  // Merge last prediction with benchmark
   const radarData = lastPrediction ? [
-    { subject: "CGPA", A: (lastPrediction.cgpa / 10) * 100, fullMark: 100 },
-    { subject: "Internships", A: Math.min((lastPrediction.internships / 3) * 100, 100), fullMark: 100 },
-    { subject: "Projects", A: Math.min((lastPrediction.projects / 5) * 100, 100), fullMark: 100 },
-    { subject: "Skills", A: lastPrediction.skillLevel * 10, fullMark: 100 },
-    { subject: "Comm.", A: lastPrediction.communicationScore * 10, fullMark: 100 },
+    { subject: "CGPA", A: (lastPrediction.cgpa / 10) * 100, B: 85, fullMark: 100 },
+    { subject: "Internships", A: Math.min((lastPrediction.internships / 3) * 100, 100), B: 70, fullMark: 100 },
+    { subject: "Projects", A: Math.min((lastPrediction.projects / 5) * 100, 100), B: 65, fullMark: 100 },
+    { subject: "Skills", A: lastPrediction.skillLevel * 10, B: 80, fullMark: 100 },
+    { subject: "Comm.", A: lastPrediction.communicationScore * 10, B: 75, fullMark: 100 },
   ] : null;
 
   return (
@@ -139,11 +147,19 @@ export function AnalyticsCharts() {
                   dataKey="A"
                   stroke="#00f3ff"
                   fill="#00f3ff"
-                  fillOpacity={0.6}
+                  fillOpacity={0.5}
+                />
+                <Radar
+                  name="Placed Benchmark"
+                  dataKey="B"
+                  stroke="#fbbf24"
+                  fill="#fbbf24"
+                  fillOpacity={0.2}
                 />
                 <Tooltip 
                   contentStyle={{ backgroundColor: '#111', borderColor: '#333', borderRadius: '8px' }}
                 />
+                <legend className="text-white" />
               </RadarChart>
             </ResponsiveContainer>
           ) : (

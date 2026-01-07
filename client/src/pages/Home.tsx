@@ -125,7 +125,7 @@ export default function Home() {
               <span className="text-xs font-bold tracking-widest uppercase">Next-Gen Placement Intelligence</span>
             </div>
             
-            <h1 className="text-6xl md:text-8xl lg:text-9xl font-display font-black mb-8 tracking-tighter leading-[0.9]">
+            <h1 className="text-6xl md:text-8xl lg:text-9xl font-display font-black mb-8 tracking-tighter leading-[0.9] border-4 border-primary p-4">
               Future Proof <br/>
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-cyan-300 to-secondary drop-shadow-[0_0_15px_rgba(0,243,255,0.3)]">
                 Your Career

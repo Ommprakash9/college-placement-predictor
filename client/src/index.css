@@ -136,6 +136,11 @@
 
 .hover-elevate:hover {
   filter: drop-shadow(0 0 15px hsl(var(--primary) / 0.3));
+  border-color: hsl(var(--primary));
+}
+
+.test-red-border {
+  border: 10px solid red !important;
 }
 
 @keyframes shimmer {

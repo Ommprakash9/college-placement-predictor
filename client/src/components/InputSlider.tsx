@@ -12,6 +12,7 @@ interface InputSliderProps {
   max: number;
   step?: number;
   className?: string;
+  disabled?: boolean;
 }
 
 export function InputSlider({
@@ -22,9 +23,10 @@ export function InputSlider({
   max,
   step = 1,
   className,
+  disabled = false,
 }: InputSliderProps) {
   return (
-    <div className={cn("space-y-4 group", className)}>
+    <div className={cn("space-y-4 group", className, disabled && "opacity-50 pointer-events-none")}>
       <div className="flex justify-between items-center">
         <Label className="text-base font-medium text-gray-200 group-hover:text-primary transition-colors">{label}</Label>
         <motion.span 
@@ -42,6 +44,7 @@ export function InputSlider({
         min={min}
         max={max}
         step={step}
+        disabled={disabled}
         className="[&>.relative>.absolute]:bg-primary [&>.relative>.block]:border-primary hover:scale-[1.01] transition-transform cursor-pointer"
       />
       <div className="flex justify-between text-xs text-muted-foreground px-1">

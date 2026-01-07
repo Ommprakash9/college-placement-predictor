@@ -498,7 +498,7 @@ export default function Home() {
                             )} />
                           </div>
                           <ul className="space-y-4 text-sm text-gray-400">
-                            {predictionData.recommendations.map((rec, i) => (
+                            {predictionData.recommendations.map((rec: string, i: number) => (
                               <motion.li 
                                 key={i} 
                                 initial={{ opacity: 0, x: -10 }}
@@ -527,7 +527,7 @@ export default function Home() {
                             Next Steps
                           </h4>
                           <div className="space-y-5">
-                            {predictionData.roadmap.map((step, i) => (
+                            {predictionData.roadmap.map((step: any, i: number) => (
                               <motion.div 
                                 key={i} 
                                 initial={{ opacity: 0, scale: 0.95 }}

@@ -11,6 +11,7 @@ interface InputNumberProps {
   min?: number;
   max?: number;
   className?: string;
+  disabled?: boolean;
 }
 
 export function InputNumber({
@@ -20,23 +21,24 @@ export function InputNumber({
   min = 0,
   max = 100,
   className,
+  disabled = false,
 }: InputNumberProps) {
   const handleDecrement = () => {
-    if (value > min) onChange(value - 1);
+    if (value > min && !disabled) onChange(value - 1);
   };
 
   const handleIncrement = () => {
-    if (value < max) onChange(value + 1);
+    if (value < max && !disabled) onChange(value + 1);
   };
 
   return (
-    <div className={cn("space-y-4 group", className)}>
+    <div className={cn("space-y-4 group", className, disabled && "opacity-50 pointer-events-none")}>
       <Label className="text-base font-medium text-gray-200 group-hover:text-secondary transition-colors">{label}</Label>
       <div className="flex items-center gap-3">
         <button
           type="button"
           onClick={handleDecrement}
-          disabled={value <= min}
+          disabled={value <= min || disabled}
           className="h-10 w-10 flex items-center justify-center rounded-lg bg-secondary/10 border border-secondary/20 text-secondary hover:bg-secondary/20 hover:border-secondary transition-all active:scale-90 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <Minus size={18} />
@@ -46,6 +48,7 @@ export function InputNumber({
           <Input
             type="number"
             value={value}
+            disabled={disabled}
             onChange={(e) => {
               const val = parseInt(e.target.value);
               if (!isNaN(val) && val >= min && val <= max) onChange(val);
@@ -57,7 +60,7 @@ export function InputNumber({
         <button
           type="button"
           onClick={handleIncrement}
-          disabled={value >= max}
+          disabled={value >= max || disabled}
           className="h-10 w-10 flex items-center justify-center rounded-lg bg-secondary/10 border border-secondary/20 text-secondary hover:bg-secondary/20 hover:border-secondary transition-all active:scale-90 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <Plus size={18} />

@@ -267,6 +267,7 @@ export default function Home() {
                     max={10}
                     step={0.1}
                     className="hover-elevate transition-all"
+                    disabled={isPending}
                   />
 
                   <div className="grid grid-cols-2 gap-8">
@@ -276,6 +277,7 @@ export default function Home() {
                       onChange={setInternships}
                       min={0}
                       max={10}
+                      disabled={isPending}
                     />
                     <InputNumber
                       label="Research Projects"
@@ -283,6 +285,7 @@ export default function Home() {
                       onChange={setProjects}
                       min={0}
                       max={15}
+                      disabled={isPending}
                     />
                   </div>
 
@@ -293,6 +296,7 @@ export default function Home() {
                     min={1}
                     max={10}
                     step={1}
+                    disabled={isPending}
                   />
 
                   <InputSlider
@@ -302,6 +306,7 @@ export default function Home() {
                     min={1}
                     max={10}
                     step={1}
+                    disabled={isPending}
                   />
 
                   <Button
@@ -409,7 +414,7 @@ export default function Home() {
                               "inline-block px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-4 border",
                               predictionData.placed ? "bg-primary/10 border-primary/20 text-primary" : "bg-orange-500/10 border-orange-500/20 text-orange-500"
                             )}>
-                              Probability Matrix Result
+                              Probability Matrix Result • {predictionData.probability > 0.8 ? "High" : predictionData.probability > 0.5 ? "Medium" : "Low"} Confidence
                             </div>
                             <h2 className={cn(
                               "text-6xl md:text-8xl font-display font-black leading-none mb-4",
